@@ -15,6 +15,7 @@ generated
 /.next/
 /out/
 
+/scripts/
 # production
 /build
 

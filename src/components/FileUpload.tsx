@@ -9,6 +9,7 @@ type Props = {
 
 const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
   const [cost, setCost] = useState<number | null>(null)
+  const [costConstant, setCostConstant] = useState<number | null>(null)
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const reader = new FileReader()
@@ -16,10 +17,22 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
       const text = reader.result as string
 
       const lines = text.trim().split('\n')
-      const parsed = lines.map(line => {
-        const [timestamp, value] = line.split(',')
-        return { timestamp: new Date(timestamp), consumption: parseFloat(value) }
+      const hourlyMap = new Map<string, number>()
+      lines.slice(1).map(line => {
+        const [meteringPoint, productType, resolution, unitType, readinType, timestamp, value, quality] = line.split(';')
+
+        const date = new Date(timestamp)
+        date.setMinutes(0, 0, 0)
+        const hourKey = date.toISOString()
+        const consumption = parseFloat(value.replace(',', '.'))
+        const existing = hourlyMap.get(hourKey) || 0
+        hourlyMap.set(hourKey, existing + consumption)
       })
+
+      const parsed = Array.from(hourlyMap.entries()).map(([timestamp, consumption]) => ({
+        timestamp,
+        consumption,
+      }))
       onFileParsed(parsed)
       calculateCost(parsed)
     }
@@ -41,6 +54,7 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
 
       const result = await response.json()
       if (response.ok) {
+        setCostConstant(result.costConstant / 100)
         setCost(result.cost / 100)
       } else {
         console.error('Error calculating cost:', result.error)
@@ -57,9 +71,10 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
         <p>{isDragActive ? 'Drop file here...' : "Upload your consumption data"}</p>
       </div>
 
-      {cost !== null && (
+      {cost !== null && costConstant !== null && (
         <div className='text-white'>
           <h3>Kustannus: {cost.toFixed(2)}€</h3>
+          <h3>Kustannus kiinteällä: {costConstant.toFixed(2)}€</h3>
         </div>
       )}
     </div>

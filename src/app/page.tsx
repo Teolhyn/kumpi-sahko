@@ -9,24 +9,16 @@ type ConsumptionEntry = {
 }
 
 export default function HomePage() {
-  const [result, setResult] = useState<number | null>(null)
 
   const handleParsedData = async (data: ConsumptionEntry[]) => {
-    const safeData = data.map(entry => ({
-      ...entry,
-      timestamp: new Date(entry.timestamp).toISOString(),
-    }))
-
-    console.log(safeData)
   }
 
   return (
     <main>
-      <h1>Electricity Cost Calculator</h1>
-      <FileDropZone onFileParsed={handleParsedData} />
-      {result !== null && (
-        <p style={{ marginTop: '20px' }}>Estimated Total Cost: €{result.toFixed(2)}</p>
-      )}
+      <div className='flex flex-col items-center justify-center mt-20'>
+        <h1>Kumpi sähkö?</h1>
+        <FileDropZone onFileParsed={handleParsedData} />
+      </div>
     </main>
   )
 }

@@ -28,13 +28,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         priceMap.set(entry.timestamp.toISOString(), entry.spotPrice)
       })
 
+      let totalCostConstant = 0
+      let constantPrice = 7
       let totalCost = 0
       consumption.forEach(entry => {
         const price = priceMap.get(entry.timestamp) ?? 0
+        console.log(entry.timestamp, entry.consumption)
         totalCost += entry.consumption * price
+        totalCostConstant += entry.consumption * constantPrice
       })
 
-      return res.status(200).json({ cost: totalCost })
+
+      return res.status(200).json({ cost: totalCost, costConstant: totalCostConstant })
     } catch (error) {
       console.error('Error in calculate-cost API:', error)
       return res.status(500).json({ error: 'Internal Server Error' })
@@ -42,4 +47,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else {
     return res.status(405).json({ error: 'Method Not Allowed' })
   }
+}
+
+export const config = {
+  api: {
+    responseLimit: false,
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
 }

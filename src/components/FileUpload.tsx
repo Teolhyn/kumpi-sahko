@@ -46,6 +46,7 @@ const FileDropZone: React.FC<Props> = () => {
     }
 
     reader.readAsText(acceptedFiles[0])
+
   }, [constantPrice, marginal])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import FileDropZone from '@/components/FileUpload'
+import GuideModule from '@/components/GuideModule'
 
 export default function HomePage() {
 

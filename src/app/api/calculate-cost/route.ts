@@ -7,6 +7,11 @@ type ConsumptionEntry = {
   consumption: number
 }
 
+type PriceEntry = {
+  timestamp: Date
+  spotPrice: number
+}
+
 export async function POST(req: Request) {
   try {
     const { consumption }: { consumption: ConsumptionEntry[] } = await req.json()
@@ -21,7 +26,7 @@ export async function POST(req: Request) {
         timestamp: true,
         spotPrice: true,
       },
-    })
+    }) as PriceEntry[]
 
     const priceMap = new Map<string, number>()
     priceEntries.forEach(entry => {

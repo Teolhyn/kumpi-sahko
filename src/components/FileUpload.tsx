@@ -4,16 +4,18 @@ import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
-type Props = {
-}
-
-const FileDropZone: React.FC<Props> = () => {
+const FileDropZone: React.FC = () => {
   const [cost, setCost] = useState<number | null>(null)
   const [totalConsumption, setTotalConsumption] = useState<number | null>(null)
   const [constantPrice, setConstantPrice] = useState<number>(7)
   const [marginal, setMarginal] = useState<number>(0.5)
   const [loading, setLoading] = useState<boolean>(false);
   const [averageCost, setAverageCost] = useState<number | null>(null)
+
+  type consumptionEntry = {
+    timestamp: string;
+    consumption: number;
+  }
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const reader = new FileReader()
@@ -37,6 +39,36 @@ const FileDropZone: React.FC<Props> = () => {
         timestamp,
         consumption,
       }))
+
+      const calculateCost = async (data: consumptionEntry[]) => {
+        try {
+          setLoading(true);
+          const response = await fetch('/api/calculate-cost', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              consumption: data,
+            }),
+          })
+
+          const result = await response.json()
+          if (response.ok) {
+            setTotalConsumption(result.totalConsumption)
+            setCost(result.cost / 100)
+            console.log(result.averageSpotPrice)
+            setAverageCost(result.averageSpotPrice)
+          } else {
+            console.error('Error calculating cost:', result.error)
+          }
+        } catch (err) {
+          console.error('Error during API request:', err)
+        } finally {
+          setLoading(false);
+        }
+      }
+
       calculateCost(parsed)
 
       window.scrollBy({
@@ -47,38 +79,9 @@ const FileDropZone: React.FC<Props> = () => {
 
     reader.readAsText(acceptedFiles[0])
 
-  }, [constantPrice, marginal])
+  }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-
-  const calculateCost = async (data: any[]) => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/calculate-cost', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          consumption: data,
-        }),
-      })
-
-      const result = await response.json()
-      if (response.ok) {
-        setTotalConsumption(result.totalConsumption)
-        setCost(result.cost / 100)
-        console.log(result.averageSpotPrice)
-        setAverageCost(result.averageSpotPrice)
-      } else {
-        console.error('Error calculating cost:', result.error)
-      }
-    } catch (err) {
-      console.error('Error during API request:', err)
-    } finally {
-      setLoading(false);
-    }
-  }
 
   const spotPriceCostWithoutMargin = (cost !== null && totalConsumption !== null)
     ? cost / totalConsumption * 100

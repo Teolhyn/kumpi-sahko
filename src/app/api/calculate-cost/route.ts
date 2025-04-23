@@ -2,11 +2,16 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+type ConsumptionEntry = {
+  timestamp: string
+  consumption: number
+}
+
 export async function POST(req: Request) {
   try {
-    const { consumption } = await req.json()
+    const { consumption }: { consumption: ConsumptionEntry[] } = await req.json()
 
-    const timestamps = consumption.map((entry: any) => entry.timestamp)
+    const timestamps = consumption.map(entry => entry.timestamp)
 
     const priceEntries = await prisma.electricityPrice.findMany({
       where: {
@@ -27,7 +32,7 @@ export async function POST(req: Request) {
     let totalCost = 0
     let totalPrice = 0
 
-    consumption.forEach((entry: any) => {
+    consumption.forEach(entry => {
       const price = priceMap.get(entry.timestamp) ?? 0
       const timestampDate = new Date(entry.timestamp)
       const vatRate = timestampDate < new Date('2024-09-01T00:00:00Z') ? 1.24 : 1.255

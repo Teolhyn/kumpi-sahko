@@ -5,10 +5,9 @@ import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 type Props = {
-  onFileParsed: (data: any[]) => void
 }
 
-const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
+const FileDropZone: React.FC<Props> = () => {
   const [cost, setCost] = useState<number | null>(null)
   const [totalConsumption, setTotalConsumption] = useState<number | null>(null)
   const [constantPrice, setConstantPrice] = useState<number>(7)
@@ -24,7 +23,7 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
       const lines = text.trim().split('\n')
       const hourlyMap = new Map<string, number>()
       lines.slice(1).map(line => {
-        const [meteringPoint, productType, resolution, unitType, readinType, timestamp, value, quality] = line.split(';')
+        const [, , , , , timestamp, value,] = line.split(';')
 
         const date = new Date(timestamp)
         date.setMinutes(0, 0, 0)
@@ -38,7 +37,6 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
         timestamp,
         consumption,
       }))
-      onFileParsed(parsed)
       calculateCost(parsed)
 
       window.scrollBy({
@@ -48,7 +46,8 @@ const FileDropZone: React.FC<Props> = ({ onFileParsed }) => {
     }
 
     reader.readAsText(acceptedFiles[0])
-  }, [onFileParsed, constantPrice, marginal])
+
+  }, [constantPrice, marginal])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 

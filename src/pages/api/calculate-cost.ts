@@ -28,18 +28,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         priceMap.set(entry.timestamp.toISOString(), entry.spotPrice)
       })
 
-      let totalCostConstant = 0
-      let constantPrice = 7
+      let totalConsumption = 0
       let totalCost = 0
+      let totalPrice = 0
+
       consumption.forEach(entry => {
         const price = priceMap.get(entry.timestamp) ?? 0
-        console.log(entry.timestamp, entry.consumption)
-        totalCost += entry.consumption * price
-        totalCostConstant += entry.consumption * constantPrice
+        const timestampDate = new Date(entry.timestamp)
+        const vatRate = timestampDate < new Date('2024-09-01T00:00:00Z') ? 1.24 : 1.255
+        const costWithVAT = entry.consumption * price * vatRate
+        totalCost += costWithVAT
+        totalConsumption += entry.consumption
+        totalPrice += price * vatRate
       })
 
+      const averageSpotPrice = priceEntries.length > 0 ? totalPrice / priceEntries.length : 0
 
-      return res.status(200).json({ cost: totalCost, costConstant: totalCostConstant })
+      return res.status(200).json({ cost: totalCost, totalConsumption, averageSpotPrice, })
     } catch (error) {
       console.error('Error in calculate-cost API:', error)
       return res.status(500).json({ error: 'Internal Server Error' })

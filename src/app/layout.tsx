@@ -61,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="fi" className="bg-black">
       <head>
+        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b0d4b714-ce87-4802-a2e9-4f303f089cc9" type="text/javascript" async></script>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />

@@ -143,7 +143,7 @@ const FileDropZone: React.FC = () => {
               <div className="skeleton h-10 w-24"></div>
               <div className="skeleton h-6 w-28"></div>
             </div>
-            <div className='flex flex-col items-start space-y-2'>
+            <div className='flex flex-col items-end space-y-2'>
               <div className="skeleton h-10 w-24"></div>
               <div className="skeleton h-6 w-28"></div>
             </div>
@@ -175,7 +175,7 @@ const FileDropZone: React.FC = () => {
                 >
                   {(totalConsumption * constantPrice / 100).toFixed(2)} €
                 </h3>
-                <h3 className='text-xl'>Kiinteällä hinnalla</h3>
+                <h3 className='text-xl text-right'>Kiinteällä hinnalla</h3>
               </div>
             </div>
             <div className='flex justify-center items-center mt-10'>

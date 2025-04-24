@@ -61,6 +61,15 @@ export default function RootLayout({
   return (
     <html lang="fi" className="bg-black">
       <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSB6JQFVHS"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-MSB6JQFVHS');
+        </script>
         <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b0d4b714-ce87-4802-a2e9-4f303f089cc9" type="text/javascript" async></script>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

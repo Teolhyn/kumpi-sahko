@@ -180,7 +180,7 @@ const FileDropZone: React.FC = () => {
             </div>
             <div className='flex justify-center items-center mt-10'>
               <span>- 25 %</span>
-              <progress className="progress w-65 mx-2" value={normalizedRatio} max="1"></progress>
+              <progress className="progress w-50 sm:w-65 mx-2" value={normalizedRatio} max="1"></progress>
               <span>+ 25 %</span>
             </div>
             <div className='flex justify-center'>

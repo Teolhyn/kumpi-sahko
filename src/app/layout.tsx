@@ -86,7 +86,7 @@ export default function RootLayout({
       </head>
       <body className={`${dmSans.variable} antialiased font-dm`}>
 
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen mx-auto">{children}</main>
 
         <footer className="p-4 text-center text-sm text-gray-400">
           © {new Date().getFullYear()} Hynnä Consulting Oy. Hintatiedot perustuvat ENTSO-e Transparency Platformin tarjoamaan avoimeen dataan.

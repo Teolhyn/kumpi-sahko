@@ -168,7 +168,7 @@ const FileDropZone: React.FC = () => {
               </div>
               <div>
                 <h3
-                  className={`text-3xl bg-clip-text text-transparent ${(totalConsumption * constantPrice / 100) < (cost + totalConsumption * marginal)
+                  className={`text-3xl bg-clip-text text-transparent text-right ${(totalConsumption * constantPrice / 100) < (cost + totalConsumption * marginal)
                     ? 'bg-gradient-to-t from-amber-200 to-amber-50'
                     : 'bg-gradient-to-t from-gray-200 to-white'
                     }`}

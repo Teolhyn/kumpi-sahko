@@ -61,7 +61,6 @@ export default function RootLayout({
   return (
     <html lang="fi" className="bg-black">
       <head>
-        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MSB6JQFVHS"></script>
         <script>
           window.dataLayer = window.dataLayer || [];

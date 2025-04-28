@@ -1,36 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Kumpi sähkö?
+[Kumpi sähkö?](https://kumpi-sahko.vercel.app/) app calculates which Finnish electricity contract would've been (and likely would be) the cheapest option for you. The calculations are based on the users uploaded consumption data that can be downloaded from [Fingrid Datahub](https://www.fingrid.fi/en/electricity-market/datahub/). The spot price data is fetched from [ENTSOe Transparency Platform](https://transparency.entsoe.eu/).
 
-## Getting Started
+### Using the app
+<img src="https://github.com/user-attachments/assets/5c1f83db-ae72-45b0-81c8-74f8e64959e2" width="300" />
 
-First, run the development server:
+1. Users can easily select the constant price they want to compare to.
+2. Users can also select the margin added to the spot price.
+3. Consumption data is uploaded.
+   
+### Results
+<img src="https://github.com/user-attachments/assets/250f74cb-6f71-4e0c-9d75-0683bbf55673" width="300" />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Here we can see the total price calculated for a given consumption data for both spot priced and constant priced contracts. At this point user can still adjust the sliders and the results are calculated on the client side so they are practically refreshed in an instant. In addition to the cost, usage optimization is showed as deviation bar. There's also a short comment on the usage and how changes in consumption can effect the results.

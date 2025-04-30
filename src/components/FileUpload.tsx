@@ -4,6 +4,12 @@ import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
+}
+
 const FileDropZone: React.FC = () => {
   const [cost, setCost] = useState<number | null>(null)
   const [totalConsumption, setTotalConsumption] = useState<number | null>(null)

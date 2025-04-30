@@ -79,6 +79,12 @@ const FileDropZone: React.FC = () => {
 
     reader.readAsText(acceptedFiles[0])
 
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'file_upload', {
+        event_category: 'engagement',
+        event_label: 'drag_and_drop',
+      });
+    }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })

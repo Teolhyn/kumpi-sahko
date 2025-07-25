@@ -86,13 +86,13 @@ export async function POST(req: Request) {
     })
 
     // If no latest entry, start from beginning of current year; otherwise continue from latest + 1 hour
-    let start = latestEntry ?
+    const start = latestEntry ?
       new Date(latestEntry.timestamp.getTime() + 60 * 60 * 1000) :
       new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1, 0, 0, 0))
 
     // End at current time (but round down to the current hour)
     const now = new Date()
-    let end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0))
+    const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0))
 
     const periodStart = formatDateUTC(start)
     const periodEnd = formatDateUTC(end)

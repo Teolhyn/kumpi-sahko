@@ -73,7 +73,7 @@ function parseEntsoeXML(xml: string): PriceEntry[] {
   return prices
 }
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   console.log('=== fetch-new-prices endpoint called ===');
   try {
     const auth = req.headers.get('authorization')

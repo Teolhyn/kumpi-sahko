@@ -25,11 +25,11 @@ export const metadata: Metadata = {
     "pörssi vai kiinteä",
     "sähkönkulutus"
   ],
-  // metadataBase: new URL("https://yourdomain.fi"),
+  metadataBase: new URL("https://www.xn--kumpishk-5za6p.fi"),
   openGraph: {
     title: "Sähkön hintalaskuri – Pörssi vs. kiinteä",
     description: "Vertaa helposti pörssi- ja kiinteähintaisen sähkön kokonaiskustannuksia Fingridin kulutusdatan avulla.",
-    // url: "https://yourdomain.fi",
+    url: "https://www.xn--kumpishk-5za6p.fi",
     siteName: "Sähkön hintalaskuri",
     images: [
       {
@@ -79,6 +79,37 @@ export default function RootLayout({
           }}
         />
         <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b0d4b714-ce87-4802-a2e9-4f303f089cc9" type="text/javascript" async></script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Sähkön hintalaskuri",
+              "description": "Vertaa pörssi- ja kiinteähintaisen sähkön kustannuksia todellisten kulutustietojesi perusteella",
+              "url": "https://www.xn--kumpishk-5za6p.fi",
+              "applicationCategory": "UtilityApplication",
+              "operatingSystem": "Web Browser",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+              },
+              "creator": {
+                "@type": "Organization",
+                "name": "Hynnä Consulting Oy"
+              },
+              "inLanguage": "fi",
+              "audience": {
+                "@type": "Audience",
+                "geographicArea": {
+                  "@type": "Country",
+                  "name": "Finland"
+                }
+              }
+            })
+          }}
+        />
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />

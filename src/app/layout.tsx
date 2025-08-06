@@ -13,7 +13,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Sähkönkulutuksen hintalaskuri | Pörssi vs. kiinteä",
+  title: "Sähkön hinta laskuri | Suoraan kulutusdatallasi",
   description: "Laske sähkökustannuksesi pörssihinnoilla ja kiinteällä hinnalla suoraan kulutusdatastasi.",
   keywords: [
     "sähkön hinta",

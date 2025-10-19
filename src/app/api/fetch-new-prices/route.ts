@@ -47,16 +47,19 @@ function parseEntsoeXML(xml: string): PriceEntry[] {
         const endTime = new Date(p.timeInterval.end)
         const points = Array.isArray(p.Point) ? p.Point : [p.Point]
 
-        // Calculate resolution based on total period duration and number of points
-        const totalDurationMs = endTime.getTime() - startTime.getTime()
-        const resolutionMs = totalDurationMs / points.length
+        // Determine resolution: 15-minute (96 per day) or hourly (24 per day)
+        const totalHours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)
+        const pointsPerHour = points.length / totalHours
+
+        // Snap to either 15-minute or 1-hour intervals
+        const intervalMs = pointsPerHour >= 3 ? 15 * 60 * 1000 : 60 * 60 * 1000
 
         for (const point of points) {
           const position = parseInt(point.position) - 1 // ENTSO-E uses 1-based indexing
           const priceValue = parseFloat(point['price.amount'])
 
-          // Calculate timestamp based on dynamic resolution
-          const timestamp = new Date(startTime.getTime() + position * resolutionMs)
+          // Calculate clean timestamp by adding interval-snapped duration
+          const timestamp = new Date(startTime.getTime() + position * intervalMs)
 
           prices.push({
             timestamp,
@@ -85,14 +88,40 @@ export async function GET(req: Request) {
       orderBy: { timestamp: 'desc' },
     })
 
-    // If no latest entry, start from beginning of current year; otherwise continue from latest + 1 hour
-    const start = latestEntry ?
-      new Date(latestEntry.timestamp.getTime() + 60 * 60 * 1000) :
-      new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1, 0, 0, 0))
+    // If no latest entry, start from beginning of current year; otherwise continue from latest + increment
+    let start: Date
+    if (latestEntry) {
+      // Detect resolution: check if latest entry is on a 15-min boundary
+      const minutes = latestEntry.timestamp.getUTCMinutes()
+      const is15Min = minutes % 15 === 0 && minutes !== 0
+
+      // Increment by 15 min or 1 hour based on detected resolution
+      const increment = is15Min ? 15 * 60 * 1000 : 60 * 60 * 1000
+      start = new Date(latestEntry.timestamp.getTime() + increment)
+    } else {
+      start = new Date(Date.UTC(new Date().getUTCFullYear(), 0, 1, 0, 0, 0))
+    }
 
     // End at current time (but round down to the current hour)
     const now = new Date()
-    const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0))
+    let end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0))
+
+    // ENTSO-E API has limits - restrict to max 30 days per request to be safe
+    const maxDays = 30
+    const maxEndTime = new Date(start.getTime() + maxDays * 24 * 60 * 60 * 1000)
+    if (end > maxEndTime) {
+      console.log(`Limiting fetch from ${end.toISOString()} to ${maxEndTime.toISOString()} (30 day limit)`)
+      end = maxEndTime
+    }
+
+    // Skip if start >= end (nothing to fetch)
+    if (start >= end) {
+      return NextResponse.json({
+        message: 'No new prices to fetch (already up to date)',
+        pricesCount: 0,
+        insertedCount: 0
+      })
+    }
 
     const periodStart = formatDateUTC(start)
     const periodEnd = formatDateUTC(end)

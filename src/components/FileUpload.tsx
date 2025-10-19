@@ -33,22 +33,20 @@ const FileDropZone: React.FC = () => {
       const text = reader.result as string
 
       const lines = text.trim().split('\n')
-      const hourlyMap = new Map<string, number>()
-      lines.slice(1).map(line => {
-        const [, , , , , timestamp, value,] = line.split(';')
 
-        const date = new Date(timestamp)
-        date.setMinutes(0, 0, 0)
-        const hourKey = date.toISOString()
-        const consumption = parseFloat(value.replace(',', '.'))
-        const existing = hourlyMap.get(hourKey) || 0
-        hourlyMap.set(hourKey, existing + consumption)
-      })
+      // Parse consumption data - keep original resolution (15-min or hourly)
+      // Backend will handle smart matching with price data
+      const parsed = lines.slice(1)
+        .map(line => {
+          const [, , , , , timestamp, value,] = line.split(';')
+          const consumption = parseFloat(value.replace(',', '.'))
 
-      const parsed = Array.from(hourlyMap.entries()).map(([timestamp, consumption]) => ({
-        timestamp,
-        consumption,
-      }))
+          return {
+            timestamp: new Date(timestamp).toISOString(),
+            consumption,
+          }
+        })
+        .filter(entry => !isNaN(entry.consumption))
 
       const calculateCost = async (data: consumptionEntry[]) => {
         try {

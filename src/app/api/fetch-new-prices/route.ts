@@ -121,10 +121,10 @@ export async function GET(req: Request) {
     let end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), 0, 0))
 
     // ENTSO-E API has limits - restrict to max 30 days per request to be safe
-    const maxDays = 30
+    const maxDays = 100
     const maxEndTime = new Date(start.getTime() + maxDays * 24 * 60 * 60 * 1000)
     if (end > maxEndTime) {
-      console.log(`Limiting fetch from ${end.toISOString()} to ${maxEndTime.toISOString()} (30 day limit)`)
+      console.log(`Limiting fetch from ${end.toISOString()} to ${maxEndTime.toISOString()} (${maxDays} day limit)`)
       end = maxEndTime
     }
 

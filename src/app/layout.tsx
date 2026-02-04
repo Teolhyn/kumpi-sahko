@@ -1,6 +1,7 @@
 import Script from 'next/script'
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
+import { Analytics } from '@vercel/analytics/next';
 import "./globals.css";
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
@@ -126,6 +127,7 @@ export default function RootLayout({
         <footer className="p-4 text-center text-sm text-gray-400">
           © {new Date().getFullYear()} Hynnä Consulting Oy. Hintatiedot perustuvat ENTSO-e Transparency Platformin tarjoamaan avoimeen dataan.
         </footer>
+        <Analytics />
       </body>
     </html>
   );

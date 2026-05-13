@@ -28,7 +28,7 @@ export default function HomePage() {
       </div>
       <div className='flex flex-col items-center justify-center mt-15 font-sans'>
         <h1 className='text-7xl mb-4 text-gray-200 max-w-80 sm:max-w-screen font-extralight font-dm-sans'>Kumpi sähkö?</h1>
-        <h2 className='text-2xl mb-8 text-gray-400 font-extralight font-dm-sans'>Pörssi- vai kiinteähintainen sähkösopimus – selvitä kumpi kannattaa</h2>
+        <h2 className='text-xl mb-5 max-w-96 text-gray-400 font-sans font-normal'>Pörssi- vai kiinteähintainen sähkösopimus – selvitä kumpi kannattaa</h2>
         <div className='max-w-80 sm:max-w-96'>
           <FileDropZone />
         </div>

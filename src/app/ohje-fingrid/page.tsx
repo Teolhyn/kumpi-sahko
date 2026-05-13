@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     "CSV-tiedosto",
     "pörssisähkö laskuri ohje"
   ],
+  alternates: {
+    canonical: "https://www.xn--kumpishk-5za6p.fi/ohje-fingrid",
+  },
   openGraph: {
     title: "Ohje Fingridin käyttöön – Sähkön hintalaskuri",
     description: "Vaiheittainen opas sähkönkulutustietojen lataamiseen Fingridin palvelusta hintalaskuria varten.",

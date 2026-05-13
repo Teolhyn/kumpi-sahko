@@ -1,8 +1,13 @@
-'use client'
-
+import type { Metadata } from "next";
 import React from 'react'
 import Link from 'next/link'
 import FileDropZone from '@/components/FileUpload'
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://www.xn--kumpishk-5za6p.fi/",
+  },
+};
 
 export default function HomePage() {
 
@@ -31,4 +36,3 @@ export default function HomePage() {
     </main>
   )
 }
-

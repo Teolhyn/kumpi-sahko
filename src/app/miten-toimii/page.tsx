@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     "kulutuksen analysointi",
     "sähkön hinta vertailu"
   ],
+  alternates: {
+    canonical: "https://www.xn--kumpishk-5za6p.fi/miten-toimii",
+  },
   openGraph: {
     title: "Miten laskuri toimii? – Sähkön hintalaskuri",
     description: "Selvitä miten pörssisähkön hintalaskuri laskee kustannuksesi ja miten tulkita tuloksia tehokkaasti.",

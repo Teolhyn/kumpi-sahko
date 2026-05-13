@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.xn--kumpishk-5za6p.fi/sitemap.xml

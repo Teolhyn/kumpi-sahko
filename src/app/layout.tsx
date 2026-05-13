@@ -79,7 +79,12 @@ export default function RootLayout({
             `,
           }}
         />
-        <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="b0d4b714-ce87-4802-a2e9-4f303f089cc9" type="text/javascript" async></script>
+        <Script
+          id="Cookiebot"
+          src="https://consent.cookiebot.com/uc.js"
+          data-cbid="b0d4b714-ce87-4802-a2e9-4f303f089cc9"
+          strategy="afterInteractive"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

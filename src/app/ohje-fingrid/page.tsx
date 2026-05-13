@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       },
     ],
     locale: "fi_FI",
-    type: "article",
+    type: "website",
   },
 };
 

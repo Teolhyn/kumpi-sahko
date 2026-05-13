@@ -19,6 +19,8 @@ const FileDropZone: React.FC = () => {
   const [totalConsumption, setTotalConsumption] = useState<number | null>(null)
   const [constantPrice, setConstantPrice] = useState<number>(7)
   const [marginal, setMarginal] = useState<number>(0.5)
+  const [kayttovaikutusBasePrice, setKayttovaikutusBasePrice] = useState<number>(8)
+  const [kayttovaikutusAdjustmentCents, setKayttovaikutusAdjustmentCents] = useState<number | null>(null)
   const [loading, setLoading] = useState<boolean>(false);
   const [averageCost, setAverageCost] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -73,8 +75,8 @@ const FileDropZone: React.FC = () => {
           if (response.ok) {
             setTotalConsumption(result.totalConsumption)
             setCost(result.cost / 100)
-            console.log(result.averageSpotPrice)
             setAverageCost(result.averageSpotPrice)
+            setKayttovaikutusAdjustmentCents(result.kayttovaikutusAdjustmentCents)
           } else {
             console.error('Error calculating cost:', result.error)
           }
@@ -108,6 +110,10 @@ const FileDropZone: React.FC = () => {
   const spotPriceCostWithoutMargin = (cost !== null && totalConsumption !== null)
     ? cost / totalConsumption * 100
     : 0
+
+  const kayttovaikutusCost = (kayttovaikutusAdjustmentCents !== null && totalConsumption !== null)
+    ? Math.max(0, totalConsumption * kayttovaikutusBasePrice / 100 + kayttovaikutusAdjustmentCents / 100)
+    : null
 
   const progressRatio = (spotPriceCostWithoutMargin !== 0 && averageCost !== null && totalConsumption !== null)
     ? (spotPriceCostWithoutMargin / averageCost)
@@ -152,7 +158,17 @@ const FileDropZone: React.FC = () => {
         </div>
       </div>
       <p className='text-xl mb-5'>
-        3. Lataa kulutustietosi <a href='https://oma.datahub.fi/#/login?returnUrl=%2F' target='_blank' rel='noopener noreferrer' className='underline underline-offset-4' >Fingridin palvelusta <FontAwesomeIcon icon={faUpRightFromSquare} size="2xs" className="" /></a> ja raahaa tiedosto alla olevaan kenttään.
+        3. Valitse käyttövaikutussähkön perushinta.
+      </p>
+      <div className="w-full max-w-xs mb-10">
+        <input type="range" value={kayttovaikutusBasePrice} min={0} max={20} className="range mb-5" step={0.1} onChange={(e) => setKayttovaikutusBasePrice(parseFloat(e.target.value))} />
+        <div>
+          <span className='text-2xl'>{kayttovaikutusBasePrice.toFixed(1)}</span>
+          <span> snt/kWh</span>
+        </div>
+      </div>
+      <p className='text-xl mb-5'>
+        4. Lataa kulutustietosi <a href='https://oma.datahub.fi/#/login?returnUrl=%2F' target='_blank' rel='noopener noreferrer' className='underline underline-offset-4' >Fingridin palvelusta <FontAwesomeIcon icon={faUpRightFromSquare} size="2xs" className="" /></a> ja raahaa tiedosto alla olevaan kenttään.
       </p>
       <div {...getRootProps()} className='p-5 outline-2 outline-gray-400 rounded-md mb-10'>
         <input {...getInputProps()} />
@@ -163,46 +179,68 @@ const FileDropZone: React.FC = () => {
       )}
       {loading ? (
         <div>
-          <div className='flex justify-between gap-10 text-2xl'>
+          <div className='flex justify-between gap-4 text-2xl'>
             <div className='flex flex-col items-start space-y-2'>
-              <div className="skeleton h-10 w-24"></div>
-              <div className="skeleton h-6 w-28"></div>
+              <div className="skeleton h-10 w-20"></div>
+              <div className="skeleton h-6 w-24"></div>
+            </div>
+            <div className='flex flex-col items-center space-y-2'>
+              <div className="skeleton h-10 w-20"></div>
+              <div className="skeleton h-6 w-24"></div>
             </div>
             <div className='flex flex-col items-end space-y-2'>
-              <div className="skeleton h-10 w-24"></div>
-              <div className="skeleton h-6 w-28"></div>
+              <div className="skeleton h-10 w-20"></div>
+              <div className="skeleton h-6 w-24"></div>
             </div>
           </div>
           <div className="skeleton h-10 w-96 my-2"></div>
           <div className="skeleton h-20 w-96 my-2"></div>
         </div>
       ) :
-        cost !== null && totalConsumption !== null && averageCost !== null && (
+        cost !== null && totalConsumption !== null && averageCost !== null && kayttovaikutusCost !== null && (
           <div>
-            <div className='text-2xl flex justify-between'>
-              <div>
-                <h3
-                  className={`text-3xl bg-clip-text text-transparent ${(cost + totalConsumption * marginal / 100) < (totalConsumption * constantPrice / 100)
-                    ? 'bg-gradient-to-t from-amber-200 to-amber-50'
-                    : 'bg-gradient-to-t from-gray-200 to-white'
-                    }`}
-                >
-                  {(cost + totalConsumption * marginal / 100).toFixed(2)} €
-                </h3>
-                <h3 className='text-xl'>Pörssisähköllä</h3>
-              </div>
-              <div>
-                <h3
-                  className={`text-3xl bg-clip-text text-transparent text-right ${(totalConsumption * constantPrice / 100) < (cost + totalConsumption * marginal / 100)
-                    ? 'bg-gradient-to-t from-amber-200 to-amber-50'
-                    : 'bg-gradient-to-t from-gray-200 to-white'
-                    }`}
-                >
-                  {(totalConsumption * constantPrice / 100).toFixed(2)} €
-                </h3>
-                <h3 className='text-xl text-right'>Kiinteällä hinnalla</h3>
-              </div>
-            </div>
+            {(() => {
+              const spotCost = cost + totalConsumption * marginal / 100
+              const fixedCost = totalConsumption * constantPrice / 100
+              const minCost = Math.min(spotCost, fixedCost, kayttovaikutusCost)
+              return (
+                <div className='text-2xl flex justify-between gap-2'>
+                  <div>
+                    <h3
+                      className={`text-2xl bg-clip-text text-transparent ${spotCost === minCost
+                        ? 'bg-gradient-to-t from-amber-200 to-amber-50'
+                        : 'bg-gradient-to-t from-gray-200 to-white'
+                        }`}
+                    >
+                      {spotCost.toFixed(2)} €
+                    </h3>
+                    <h3 className='text-base'>Pörssisähköllä</h3>
+                  </div>
+                  <div className='text-center'>
+                    <h3
+                      className={`text-2xl bg-clip-text text-transparent ${kayttovaikutusCost === minCost
+                        ? 'bg-gradient-to-t from-amber-200 to-amber-50'
+                        : 'bg-gradient-to-t from-gray-200 to-white'
+                        }`}
+                    >
+                      {kayttovaikutusCost.toFixed(2)} €
+                    </h3>
+                    <h3 className='text-base'>Käyttövaikutus&shy;sähköllä</h3>
+                  </div>
+                  <div className='text-right'>
+                    <h3
+                      className={`text-2xl bg-clip-text text-transparent ${fixedCost === minCost
+                        ? 'bg-gradient-to-t from-amber-200 to-amber-50'
+                        : 'bg-gradient-to-t from-gray-200 to-white'
+                        }`}
+                    >
+                      {fixedCost.toFixed(2)} €
+                    </h3>
+                    <h3 className='text-base'>Kiinteällä hinnalla</h3>
+                  </div>
+                </div>
+              )
+            })()}
             <div className='flex justify-center items-center mt-10'>
               <span>- 25 %</span>
               <progress className="progress w-50 sm:w-65 mx-2" value={normalizedRatio} max="1"></progress>

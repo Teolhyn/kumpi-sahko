@@ -75,6 +75,8 @@ export async function POST(req: Request) {
     let totalCost = 0
     let totalPrice = 0
 
+    const monthData = new Map<string, { consumption: number; priceSum: number; count: number }>()
+
     consumption.forEach(entry => {
       const timestampDate = new Date(entry.timestamp)
       const vatRate = timestampDate < new Date('2024-09-01T00:00:00Z') ? 1.24 : 1.255
@@ -107,15 +109,33 @@ export async function POST(req: Request) {
         }
       }
 
-      const costWithVAT = entry.consumption * price * vatRate
+      const priceWithVAT = price * vatRate
+      const costWithVAT = entry.consumption * priceWithVAT
       totalCost += costWithVAT
       totalConsumption += entry.consumption
-      totalPrice += price * vatRate
+      totalPrice += priceWithVAT
+
+      // Track per-month data for käyttövaikutus B calculation
+      const monthKey = entry.timestamp.substring(0, 7)
+      if (!monthData.has(monthKey)) monthData.set(monthKey, { consumption: 0, priceSum: 0, count: 0 })
+      const month = monthData.get(monthKey)!
+      month.consumption += entry.consumption
+      month.priceSum += priceWithVAT
+      month.count += 1
     })
 
     const averageSpotPrice = consumption.length > 0 ? totalPrice / consumption.length : 0
 
-    return NextResponse.json({ cost: totalCost, totalConsumption, averageSpotPrice })
+    // B = sum over months of (E_month × avg_spotPrice_month) [eurocents]
+    // Used for käyttövaikutus: adjustment = A - B = totalCost - kayttovaikutusBCents
+    let kayttovaikutusBCents = 0
+    monthData.forEach(m => {
+      const monthAvg = m.count > 0 ? m.priceSum / m.count : 0
+      kayttovaikutusBCents += m.consumption * monthAvg
+    })
+    const kayttovaikutusAdjustmentCents = totalCost - kayttovaikutusBCents
+
+    return NextResponse.json({ cost: totalCost, totalConsumption, averageSpotPrice, kayttovaikutusAdjustmentCents })
   } catch (error) {
     console.error('Error in calculate-cost API:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

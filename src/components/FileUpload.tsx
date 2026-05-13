@@ -21,6 +21,7 @@ const FileDropZone: React.FC = () => {
   const [marginal, setMarginal] = useState<number>(0.5)
   const [loading, setLoading] = useState<boolean>(false);
   const [averageCost, setAverageCost] = useState<number | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   type consumptionEntry = {
     timestamp: string;
@@ -28,6 +29,7 @@ const FileDropZone: React.FC = () => {
   }
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    setError(null)
     const reader = new FileReader()
     reader.onload = () => {
       const text = reader.result as string
@@ -51,6 +53,7 @@ const FileDropZone: React.FC = () => {
       const calculateCost = async (data: consumptionEntry[]) => {
         try {
           setLoading(true);
+          setError(null);
           const response = await fetch('/api/calculate-cost', {
             method: 'POST',
             headers: {
@@ -60,6 +63,11 @@ const FileDropZone: React.FC = () => {
               consumption: data,
             }),
           })
+
+          if (response.status === 413) {
+            setError('Tiedosto on liian suuri. Valitse lyhyempi aikajakso ja lataa kulutustiedot uudelleen.')
+            return
+          }
 
           const result = await response.json()
           if (response.ok) {
@@ -150,6 +158,9 @@ const FileDropZone: React.FC = () => {
         <input {...getInputProps()} />
         <p>{isDragActive ? 'Tiputa tiedosto tähän...' : "Lähetä kulutustietosi"}</p>
       </div>
+      {error && (
+        <p className='text-red-400 mb-6'>{error}</p>
+      )}
       {loading ? (
         <div>
           <div className='flex justify-between gap-10 text-2xl'>
